@@ -1,3 +1,0 @@
-[submodule "Dependencies/basetools"]
-	path = ../basetools
-	url = git@bitbucket.org:rantersteam/basetools.git
