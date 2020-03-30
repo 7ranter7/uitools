@@ -20,19 +20,16 @@ namespace RanterTools.UI
         [SerializeField]
         Button switchButton;
         [SerializeField]
-        Image starPrefab;
+        RectTransform starPrefab;
+        [SerializeField]
+        float aspectRatioStar = 1;
         [SerializeField]
         RectTransform stars;
         #endregion Parameters
         #region State
-        List<Image> starsContainer = new List<Image>();
+        List<RectTransform> starsContainer = new List<RectTransform>();
         bool visible = false;
-        RectTransform starsMask;
-        HorizontalLayoutGroup starsLayout;
-        HorizontalLayoutGroup StarsLayout
-        {
-            get { return starsLayout = starsLayout ?? stars.GetComponent<HorizontalLayoutGroup>(); }
-        }
+        bool needUpdate = false;
         #endregion State
 
 
@@ -58,17 +55,16 @@ namespace RanterTools.UI
                 textComponent.color = c;
                 OnValueChanged(text);
             }
-            ForceLabelUpdate();
         }
 
         void OnValueChanged(string text)
         {
-            if (!visible && text.Length > 0)
-            {
-                var a = textComponent.GetRenderedValues(false);
-                stars.anchoredPosition = new Vector2((textComponent.transform as RectTransform).anchoredPosition.x, stars.anchoredPosition.y);
-                stars.sizeDelta = new Vector2(a.x, stars.sizeDelta.y);
-            }
+            needUpdate = true;
+
+        }
+
+        public void UpdateStars()
+        {
             if (text.Length < starsContainer.Count)
             {
                 while (text.Length != starsContainer.Count)
@@ -82,11 +78,26 @@ namespace RanterTools.UI
                 while (text.Length != starsContainer.Count)
                 {
                     var star = Instantiate(starPrefab, stars);
-                    star.gameObject.SetActive(true);
                     starsContainer.Add(star);
                 }
             }
 
+            var a = textComponent.GetRenderedValues(false);
+            if (!visible && text.Length > 0)
+            {
+                stars.anchoredPosition = new Vector2((textComponent.transform as RectTransform).anchoredPosition.x, stars.anchoredPosition.y);
+                stars.sizeDelta = new Vector2(a.x, stars.sizeDelta.y);
+            }
+            float w = a.x / starsContainer.Count, h = w;
+            for (int i = 0; i < starsContainer.Count; i++)
+            {
+                starsContainer[i].anchoredPosition = new Vector2(i * w, starsContainer[i].anchoredPosition.y);
+                if (aspectRatioStar > 0)
+                    h = w / aspectRatioStar;
+                else h = starsContainer[i].rect.height;
+                starsContainer[i].sizeDelta = new Vector2(w, h);
+                if (!starsContainer[i].gameObject.activeSelf) starsContainer[i].gameObject.SetActive(true);
+            }
         }
         #endregion Methods
 
@@ -110,7 +121,6 @@ namespace RanterTools.UI
         protected override void OnEnable()
         {
             base.OnEnable();
-            starsMask = stars.parent as RectTransform;
             if (switchButton != null) switchButton.onClick.AddListener(Switch);
             onValueChanged.AddListener(OnValueChanged);
         }
@@ -125,12 +135,24 @@ namespace RanterTools.UI
             onValueChanged.RemoveListener(OnValueChanged);
         }
 
+
         /// <summary>
         /// Update is called every frame, if the MonoBehaviour is enabled.
         /// </summary>
         void Update()
         {
-
+            textComponent.ForceMeshUpdate();
+            var a = textComponent.GetRenderedValues(false);
+            if (!visible && text.Length > 0)
+            {
+                stars.anchoredPosition = new Vector2((textComponent.transform as RectTransform).anchoredPosition.x, stars.anchoredPosition.y);
+                stars.sizeDelta = new Vector2(a.x, stars.sizeDelta.y);
+            }
+            if (needUpdate)
+            {
+                UpdateStars();
+                needUpdate = false;
+            }
         }
 
         /// <summary>
@@ -138,18 +160,9 @@ namespace RanterTools.UI
         /// </summary>
         protected override void LateUpdate()
         {
+
             base.LateUpdate();
-            if (!visible && text.Length > 0)
-            {
-                starsMask.anchorMax = textViewport.anchorMax;
-                starsMask.anchorMin = textViewport.anchorMin;
-                starsMask.anchoredPosition = textViewport.anchoredPosition;
-                starsMask.sizeDelta = textViewport.sizeDelta;
-                var a = textComponent.GetRenderedValues(false);
-                stars.anchoredPosition = new Vector2((textComponent.transform as RectTransform).anchoredPosition.x, stars.anchoredPosition.y);
-                stars.sizeDelta = new Vector2(a.x, stars.sizeDelta.y);
-                StarsLayout.CalculateLayoutInputHorizontal();
-            }
+
         }
 
 
