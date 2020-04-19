@@ -16,6 +16,10 @@ namespace RanterTools.UI
     [DisallowMultipleComponent]
     public class ComboBox : MonoBehaviour
     {
+        #region Global State
+        public static event Action<ComboBox> OnOpenPanel;
+        #endregion Global State
+
         #region Parameters
         /// <summary>
         /// AvailableOptions for combobox
@@ -53,6 +57,8 @@ namespace RanterTools.UI
         /// </summary>
         [SerializeField]
         bool resetAfterSelect = false;
+        [SerializeField]
+        bool closeIfAnotherOpened = false;
         /// <summary>
         /// On select option
         /// </summary>
@@ -243,6 +249,7 @@ namespace RanterTools.UI
             {
                 isPanelActive = true;
                 panel.gameObject.SetActive(isPanelActive);
+                if (OnOpenPanel != null) OnOpenPanel(this);
                 RedrawPanel();
             }
         }
@@ -265,19 +272,33 @@ namespace RanterTools.UI
         {
             isPanelActive = !isPanelActive;
             text = "";
+            if (OnOpenPanel != null && isPanelActive) OnOpenPanel(this);
             RedrawPanel();
             panel.gameObject.SetActive(isPanelActive);
+        }
+
+        /// <summary>
+        /// Callback for event when every combobox is opening.
+        /// </summary>
+        /// <param name="comboBox">Opening combobox</param>
+        void OnOpenPanelHandler(ComboBox comboBox)
+        {
+            if (comboBox != this && closeIfAnotherOpened)
+            {
+                isPanelActive = false;
+                panel.gameObject.SetActive(isPanelActive);
+                RedrawPanel();
+            }
         }
         #endregion Methods
 
         #region Unity
-
         /// <summary>
         /// Awake is called when the script instance is being loaded.
         /// </summary>
         public void Awake()
         {
-
+            OnOpenPanel += OnOpenPanelHandler;
             (template.transform as RectTransform).sizeDelta = new Vector2(scrollRect.content.rect.width, scrollRect.content.rect.width / template.GetComponent<AspectRatioFitter>().aspectRatio);
             panel = scrollRect.transform.parent as RectTransform;
             defaultPanelSize = new Vector2(panel.anchorMin.y, panel.anchorMax.y);
@@ -295,6 +316,7 @@ namespace RanterTools.UI
         /// </summary>
         void OnDestroy()
         {
+            OnOpenPanel -= OnOpenPanelHandler;
             mainInput.onValueChanged.RemoveListener(OnValueChanged);
             mainInput.onSelect.RemoveListener(OnFieldSelect);
             if (arrow != null) arrow.onClick.RemoveListener(OnArrowTap);
