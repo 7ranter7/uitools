@@ -40,15 +40,9 @@ namespace RanterTools.UI.Debug
 
 
         #region Methods
-
-
-
-        public void OrientationChange(int value)
+        public void Apply()
         {
-            Screen.orientation = (ScreenOrientation)(value + 1);
-        }
-        public void ScreenSizeChange()
-        {
+            Screen.orientation = (ScreenOrientation)(screenOrientation.value + 1);
             FullScreenMode fullScreenMode = (FullScreenMode)this.fullScreenMode.value;
             int refreshRate = 30;
             switch (this.refreshRate.value)
@@ -93,7 +87,14 @@ namespace RanterTools.UI.Debug
             if (applyScreenSize == null)
                 applyScreenSize = GameObject.Find("ApplyScreen").GetComponent<Button>();
 
-            if (screenOrientation != null) screenOrientation.value = (int)Screen.orientation - 1;
+
+        }
+        /// <summary>
+        /// This function is called when the object becomes enabled and active.
+        /// </summary>
+        void OnEnable()
+        {
+            if (screenOrientation != null) screenOrientation.value = ((int)Screen.orientation) - 1;
             if (screenSizeX != null) screenSizeX.text = Screen.currentResolution.width.ToString();
             if (screenSizeY != null) screenSizeY.text = Screen.currentResolution.height.ToString();
             if (fullScreenMode != null)
@@ -120,16 +121,8 @@ namespace RanterTools.UI.Debug
                         refreshRate.value = 0;
                         break;
                 }
-                screenOrientation.value = (int)Screen.orientation;
             }
-        }
-        /// <summary>
-        /// This function is called when the object becomes enabled and active.
-        /// </summary>
-        void OnEnable()
-        {
-            screenOrientation.onValueChanged.AddListener(OrientationChange);
-            applyScreenSize.onClick.AddListener(ScreenSizeChange);
+            applyScreenSize.onClick.AddListener(Apply);
         }
 
         /// <summary>
@@ -137,8 +130,7 @@ namespace RanterTools.UI.Debug
         /// </summary>
         void OnDisable()
         {
-            screenOrientation.onValueChanged.RemoveListener(OrientationChange);
-            applyScreenSize.onClick.RemoveListener(ScreenSizeChange);
+            applyScreenSize.onClick.RemoveListener(Apply);
         }
 
 
