@@ -25,10 +25,10 @@ namespace RanterTools.UI.Editor
         [MenuItem("CONTEXT/RectTransform/Apply anchors")]
         public static void ApplyAnchors(MenuCommand command)
         {
+            if (EditorApplication.isPlaying) return;
             RectTransform rectTransform = (RectTransform)command.context;
             RectTransform parentRectTransform = rectTransform.parent as RectTransform;
             string path = RectTransformScenePath(rectTransform);
-            Debug.Log($"path {path}");
             if (!states.ContainsKey(path))
             {
                 var state = new RectTransformState();
@@ -62,11 +62,9 @@ namespace RanterTools.UI.Editor
         [MenuItem("CONTEXT/RectTransform/Revert anchors")]
         public static void RevertAnchors(MenuCommand command)
         {
-
-
+            if (EditorApplication.isPlaying) return;
             RectTransform rectTransform = (RectTransform)command.context;
             string path = RectTransformScenePath(rectTransform);
-            Debug.Log($"path {path}");
             if (!states.ContainsKey(path))
             {
                 ToolsDebug.Log($"RectTransformExtension can't revert anchors.");
@@ -87,6 +85,7 @@ namespace RanterTools.UI.Editor
 
         static string RectTransformScenePath(Transform transform)
         {
+
             string path = $"{transform.gameObject.name}";
             Transform t = transform.parent;
             while (t != null)
@@ -158,6 +157,7 @@ namespace RanterTools.UI.Editor
             }
             else
             {
+                Directory.CreateDirectory(Path.Combine(GetUIToolsDirectory(), "Editor", "Resources"));
                 statesAsset = ScriptableObject.CreateInstance<RectTransformStates>();
                 AssetDatabase.CreateAsset(statesAsset, path);
             }

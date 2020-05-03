@@ -62,7 +62,7 @@ namespace RanterTools.UI
         #region Methods
         void UpdateParameters()
         {
-            font = fontSize * Screen.width / 1080.0f;
+            font = fontSize * Mathf.Min(Screen.width, Screen.height) / 1080.0f;
             TextMeshProUGUI.fontSize = font;
         }
         #endregion Methods
@@ -80,9 +80,9 @@ namespace RanterTools.UI
 #if UNITY_EDITOR
             if (fontSize == -1)
                 fontSize = TextMeshProUGUI.fontSize;
-            if (width != Screen.width || oldFont != fontSize)
+            if (width != Mathf.Min(Screen.width, Screen.height) || oldFont != fontSize)
             {
-                width = Screen.width;
+                width = Mathf.Min(Screen.width, Screen.height);
                 oldFont = font;
 #endif
                 UpdateParameters();
@@ -96,12 +96,12 @@ namespace RanterTools.UI
         /// </summary>
         void OnEnable()
         {
-            //if (fontSize == -1)
-            fontSize = TextMeshProUGUI.fontSize;
+            if (fontSize == -1)
+                fontSize = TextMeshProUGUI.fontSize;
             TextMeshProUGUI.enableAutoSizing = false;
-            if (width != Screen.width || oldFont != fontSize)
+            if (width != Mathf.Min(Screen.width, Screen.height) || oldFont != fontSize)
             {
-                width = Screen.width;
+                width = Mathf.Min(Screen.width, Screen.height);
                 oldFont = font;
                 UpdateParameters();
             }
@@ -123,10 +123,10 @@ namespace RanterTools.UI
         /// </summary>
         void Update()
         {
-            if (width != Screen.width || oldFont != fontSize)
+            if (width != Mathf.Min(Screen.width, Screen.height) || oldFont != fontSize)
             {
                 UpdateParameters();
-                width = Screen.width;
+                width = Mathf.Min(Screen.width, Screen.height);
                 oldFont = font;
             }
         }

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
 using UnityEditor;
-
+#endif
 namespace RanterTools.UI
 {
     [ExecuteInEditMode]
@@ -55,11 +56,12 @@ namespace RanterTools.UI
         #region Methods
         void UpdateParameters()
         {
-            multiplier = PixelPerUnityMultiplier * 1080.0f / Screen.width;
+            multiplier = PixelPerUnityMultiplier * 1080.0f / Mathf.Min(Screen.width, Screen.height);
             if (Image.type == Image.Type.Sliced)
             {
                 Image.pixelsPerUnitMultiplier = multiplier;
             }
+
 
         }
         #endregion Methods
@@ -77,14 +79,15 @@ namespace RanterTools.UI
         /// </summary>
         void OnEnable()
         {
-            PixelPerUnityMultiplier = Image.pixelsPerUnitMultiplier;
+            if (PixelPerUnityMultiplier == -1)
+                PixelPerUnityMultiplier = Image.pixelsPerUnitMultiplier;
 #if UNITY_EDITOR
             All.Add(this);
 #endif
 #if UNITY_EDITOR
-            if (width != Screen.width || oldPixelPerUnityMultiplier != PixelPerUnityMultiplier)
+            if (width != Mathf.Min(Screen.width, Screen.height) || oldPixelPerUnityMultiplier != PixelPerUnityMultiplier)
             {
-                width = Screen.width;
+                width = Mathf.Min(Screen.width, Screen.height);
                 oldPixelPerUnityMultiplier = PixelPerUnityMultiplier;
 #endif
                 UpdateParameters();
@@ -117,10 +120,10 @@ namespace RanterTools.UI
         /// </summary>
         void Update()
         {
-            if (width != Screen.width || oldPixelPerUnityMultiplier != PixelPerUnityMultiplier)
+            if (width != Mathf.Min(Screen.width, Screen.height) || oldPixelPerUnityMultiplier != PixelPerUnityMultiplier)
             {
                 UpdateParameters();
-                width = Screen.width;
+                width = Mathf.Min(Screen.width, Screen.height);
                 oldPixelPerUnityMultiplier = PixelPerUnityMultiplier;
             }
         }
