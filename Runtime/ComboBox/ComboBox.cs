@@ -144,8 +144,7 @@ namespace RanterTools.UI
             }
             catch (System.NullReferenceException ex)
             {
-                Debug.LogException(ex);
-                Debug.LogError("Something is setup incorrectly with the dropdownlist component causing a Null Refernece Exception");
+                ToolsDebug.LogError("Something is setup incorrectly with the dropdownlist component causing a Null Refernece Exception");
                 success = false;
             }
             return success;
