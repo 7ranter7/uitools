@@ -10,86 +10,28 @@ namespace RanterTools.UI
     [RequireComponent(typeof(Canvas))]
     public class CanvasHelper : MonoBehaviour
     {
+        #region Global Event
         public static UnityEvent onOrientationChange = new UnityEvent();
         public static UnityEvent onResolutionChange = new UnityEvent();
+        #endregion Global Event
+        #region Global State
         public static bool isLandscape { get; private set; }
+        static List<CanvasHelper> helpers = new List<CanvasHelper>();
+        static bool screenChangeVarsInitialized = false;
+        static ScreenOrientation lastOrientation = ScreenOrientation.Portrait;
+        static Vector2 lastResolution = Vector2.zero;
+        static Rect lastSafeArea = Rect.zero;
+        #endregion Global State
+        #region Global Methods
 
-        private static List<CanvasHelper> helpers = new List<CanvasHelper>();
-
-        private static bool screenChangeVarsInitialized = false;
-        private static ScreenOrientation lastOrientation = ScreenOrientation.Portrait;
-        private static Vector2 lastResolution = Vector2.zero;
-        private static Rect lastSafeArea = Rect.zero;
-
-        private Canvas canvas;
-        private RectTransform rectTransform;
-
-
-        void Awake()
+        public static void ForceUpdate()
         {
-            if (!helpers.Contains(this))
-                helpers.Add(this);
-
-            canvas = GetComponent<Canvas>();
-            rectTransform = GetComponent<RectTransform>();
-
-            if (!screenChangeVarsInitialized)
-            {
-                lastOrientation = Screen.orientation;
-                lastResolution.x = Screen.width;
-                lastResolution.y = Screen.height;
-                lastSafeArea = Screen.safeArea;
-
-                screenChangeVarsInitialized = true;
-            }
+            OrientationChanged();
+            ResolutionChanged();
+            SafeAreaChanged();
         }
 
-        void Start()
-        {
-            ApplySafeArea();
-        }
-
-        void Update()
-        {
-            if (helpers[0] != this)
-                return;
-
-            if (Screen.orientation != lastOrientation)
-                OrientationChanged();
-
-            if (Screen.safeArea != lastSafeArea)
-                SafeAreaChanged();
-
-            if (Screen.width != lastResolution.x || Screen.height != lastResolution.y)
-                ResolutionChanged();
-        }
-
-        void ApplySafeArea()
-        {
-
-
-            var safeArea = Screen.safeArea;
-
-            var anchorMin = safeArea.position;
-            var anchorMax = safeArea.position + safeArea.size;
-            anchorMin.x /= canvas.pixelRect.width;
-            anchorMin.y /= canvas.pixelRect.height;
-            anchorMax.x /= canvas.pixelRect.width;
-            anchorMax.y /= canvas.pixelRect.height;
-            foreach (var s in SafeArea.All)
-            {
-                s.RectTransform.anchorMin = anchorMin;
-                s.RectTransform.anchorMax = anchorMax;
-            }
-        }
-
-        void OnDestroy()
-        {
-            if (helpers != null && helpers.Contains(this))
-                helpers.Remove(this);
-        }
-
-        private static void OrientationChanged()
+        static void OrientationChanged()
         {
             //Debug.Log("Orientation changed from " + lastOrientation + " to " + Screen.orientation + " at " + Time.time);
 
@@ -102,7 +44,7 @@ namespace RanterTools.UI
 
         }
 
-        private static void ResolutionChanged()
+        static void ResolutionChanged()
         {
             if (lastResolution.x == Screen.width && lastResolution.y == Screen.height)
                 return;
@@ -116,7 +58,7 @@ namespace RanterTools.UI
             onResolutionChange.Invoke();
         }
 
-        private static void SafeAreaChanged()
+        static void SafeAreaChanged()
         {
             if (lastSafeArea == Screen.safeArea)
                 return;
@@ -148,6 +90,93 @@ namespace RanterTools.UI
 
             return GetCanvasSize();
         }
+        #endregion Global  Methods
+        #region State
+        Canvas canvas;
+        RectTransform rectTransform;
+        #endregion State
+
+
+        #region Unity
+
+
+        /// <summary>
+        /// Awake is called when the script instance is being loaded.
+        /// </summary>
+        void Awake()
+        {
+            if (!helpers.Contains(this))
+                helpers.Add(this);
+
+            canvas = GetComponent<Canvas>();
+            rectTransform = GetComponent<RectTransform>();
+
+            if (!screenChangeVarsInitialized)
+            {
+                lastOrientation = Screen.orientation;
+                lastResolution.x = Screen.width;
+                lastResolution.y = Screen.height;
+                lastSafeArea = Screen.safeArea;
+
+                screenChangeVarsInitialized = true;
+            }
+        }
+        /// <summary>
+        /// Start is called on the frame when a script is enabled just before
+        /// any of the Update methods is called the first time.
+        /// </summary>
+        void Start()
+        {
+            ApplySafeArea();
+        }
+
+
+        /// <summary>
+        /// Update is called every frame, if the MonoBehaviour is enabled.
+        /// </summary>
+        void Update()
+        {
+            if (helpers[0] != this)
+                return;
+
+            if (Screen.orientation != lastOrientation)
+                OrientationChanged();
+
+            if (Screen.safeArea != lastSafeArea)
+                SafeAreaChanged();
+
+            if (Screen.width != lastResolution.x || Screen.height != lastResolution.y)
+                ResolutionChanged();
+        }
+
+        void ApplySafeArea()
+        {
+            var safeArea = Screen.safeArea;
+            var anchorMin = safeArea.position;
+            var anchorMax = safeArea.position + safeArea.size;
+            anchorMin.x /= canvas.pixelRect.width;
+            anchorMin.y /= canvas.pixelRect.height;
+            anchorMax.x /= canvas.pixelRect.width;
+            anchorMax.y /= canvas.pixelRect.height;
+            foreach (var s in SafeArea.All)
+            {
+                s.RectTransform.anchorMin = anchorMin;
+                s.RectTransform.anchorMax = anchorMax;
+            }
+        }
+
+
+        /// <summary>
+        /// This function is called when the MonoBehaviour will be destroyed.
+        /// </summary>
+        void OnDestroy()
+        {
+            if (helpers != null && helpers.Contains(this))
+                helpers.Remove(this);
+        }
+
+        #endregion Unity
     }
+
 
 }
