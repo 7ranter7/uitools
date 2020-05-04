@@ -13,7 +13,7 @@ namespace RanterTools.UI
         #endregion Events
 
         #region Global State
-
+        public static List<SafeArea> All { get; set; } = new List<SafeArea>();
         #endregion Global State
 
         #region Global Methods
@@ -26,7 +26,7 @@ namespace RanterTools.UI
 
         #region State
         RectTransform rectTransform;
-        RectTransform RectTransform
+        public RectTransform RectTransform
         {
             get { return rectTransform = rectTransform ?? GetComponent<RectTransform>(); }
         }
@@ -42,31 +42,15 @@ namespace RanterTools.UI
         /// </summary>
         void Awake()
         {
-            RectTransform.anchorMin = RectTransform.anchorMax = RectTransform.pivot = new Vector2(0, 0);
-            RectTransform.anchoredPosition = Screen.safeArea.position;
-            RectTransform.sizeDelta = Screen.safeArea.size;
-        }
-        /// <summary>
-        /// This function is called when the object becomes enabled and active.
-        /// </summary>
-        void OnEnable()
-        {
-
+            All.Add(this);
         }
 
-        /// <summary>
-        /// This function is called when the behaviour becomes disabled or inactive.
-        /// </summary>
-        void OnDisable()
-        {
-
-        }
         /// <summary>
         /// This function is called when the MonoBehaviour will be destroyed.
         /// </summary>
         void OnDestroy()
         {
-
+            All.Remove(this);
         }
 
         #endregion Unity
