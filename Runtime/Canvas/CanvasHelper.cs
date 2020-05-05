@@ -27,8 +27,8 @@ namespace RanterTools.UI
         public static void ForceUpdate()
         {
             OrientationChanged();
-            ResolutionChanged();
-            SafeAreaChanged();
+            ResolutionChanged(true);
+            SafeAreaChanged(true);
         }
 
         static void OrientationChanged()
@@ -44,9 +44,9 @@ namespace RanterTools.UI
 
         }
 
-        static void ResolutionChanged()
+        static void ResolutionChanged(bool force = false)
         {
-            if (lastResolution.x == Screen.width && lastResolution.y == Screen.height)
+            if (lastResolution.x == Screen.width && lastResolution.y == Screen.height && !force)
                 return;
 
             //Debug.Log("Resolution changed from " + lastResolution + " to (" + Screen.width + ", " + Screen.height + ") at " + Time.time);
@@ -58,9 +58,9 @@ namespace RanterTools.UI
             onResolutionChange.Invoke();
         }
 
-        static void SafeAreaChanged()
+        static void SafeAreaChanged(bool force = false)
         {
-            if (lastSafeArea == Screen.safeArea)
+            if (lastSafeArea == Screen.safeArea && !force)
                 return;
 
             //Debug.Log("Safe Area changed from " + lastSafeArea + " to " + Screen.safeArea.size + " at " + Time.time);
