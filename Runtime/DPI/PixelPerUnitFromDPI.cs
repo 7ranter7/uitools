@@ -9,7 +9,7 @@ namespace RanterTools.UI
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(Image))]
-    public class PixelPerUnityFromDPI : MonoBehaviour
+    public class PixelPerUnitFromDPI : MonoBehaviour
     {
         #region Events
 
@@ -17,7 +17,7 @@ namespace RanterTools.UI
 
         #region Global State
 #if UNITY_EDITOR
-        static List<PixelPerUnityFromDPI> All = new List<PixelPerUnityFromDPI>();
+        static List<PixelPerUnitFromDPI> All = new List<PixelPerUnitFromDPI>();
 #endif
         #endregion Global State
 
