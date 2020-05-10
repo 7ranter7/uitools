@@ -40,18 +40,9 @@ namespace RanterTools.UI
 
         #region State
         bool cacheTried = false;
-        TextMeshProUGUI textMeshProUGUI;
-        TextMeshProUGUI TextMeshProUGUI
-        {
-            get
-            {
-                if (!cacheTried)
-                {
-                    textMeshProUGUI = GetComponent<TextMeshProUGUI>();
-                }
-                return textMeshProUGUI;
-            }
-        }
+
+        TextMeshProUGUI TextMeshProUGUI { get; set; }
+        TMP_InputField InputField { get; set; }
 #if UNITY_EDITOR
         float width;
         float oldFont;
@@ -63,7 +54,32 @@ namespace RanterTools.UI
         void UpdateParameters()
         {
             font = fontSize * Mathf.Min(Screen.width, Screen.height) / 1080.0f;
+            if (InputField != null)
+            {
+                InputField.enabled = true;
+                InputField.pointSize = font;
+            }
             TextMeshProUGUI.fontSize = font;
+        }
+
+        void InitFont()
+        {
+            if (fontSize == -1)
+            {
+                if (InputField != null)
+                {
+                    InputField.enabled = false;
+                    TextMeshProUGUI.enableAutoSizing = true;
+                    TextMeshProUGUI.ForceMeshUpdate();
+                }
+                fontSize = TextMeshProUGUI.fontSize;
+                if (InputField != null)
+                {
+                    InputField.enabled = true;
+                    InputField.pointSize = fontSize;
+                }
+            }
+            TextMeshProUGUI.enableAutoSizing = false;
         }
         #endregion Methods
 
@@ -73,13 +89,13 @@ namespace RanterTools.UI
         /// </summary>
         void Awake()
         {
-            TextMeshProUGUI.enableAutoSizing = false;
+            TextMeshProUGUI = GetComponent<TextMeshProUGUI>();
+            InputField = GetComponentInParent<TMP_InputField>();
 #if UNITY_EDITOR
             All.Add(this);
 #endif
 #if UNITY_EDITOR
-            if (fontSize == -1)
-                fontSize = TextMeshProUGUI.fontSize;
+            InitFont();
             if (width != Mathf.Min(Screen.width, Screen.height) || oldFont != fontSize)
             {
                 width = Mathf.Min(Screen.width, Screen.height);
@@ -96,9 +112,7 @@ namespace RanterTools.UI
         /// </summary>
         void OnEnable()
         {
-            if (fontSize == -1)
-                fontSize = TextMeshProUGUI.fontSize;
-            TextMeshProUGUI.enableAutoSizing = false;
+            InitFont();
             if (width != Mathf.Min(Screen.width, Screen.height) || oldFont != fontSize)
             {
                 width = Mathf.Min(Screen.width, Screen.height);
