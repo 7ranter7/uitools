@@ -56,8 +56,7 @@ namespace RanterTools.UI
             font = fontSize * Mathf.Min(Screen.width, Screen.height) / 1080.0f;
             if (InputField != null)
             {
-                InputField.enabled = true;
-                InputField.pointSize = font;
+                InputField.SetGlobalPointSize(font);
             }
             TextMeshProUGUI.fontSize = font;
         }
@@ -68,15 +67,21 @@ namespace RanterTools.UI
             {
                 if (InputField != null)
                 {
-                    InputField.enabled = false;
+                    if (InputField.textComponent == TextMeshProUGUI)
+                    {
+                        InputField.textComponent = null;
+                    }
                     TextMeshProUGUI.enableAutoSizing = true;
                     TextMeshProUGUI.ForceMeshUpdate();
                 }
                 fontSize = TextMeshProUGUI.fontSize;
                 if (InputField != null)
                 {
-                    InputField.enabled = true;
-                    InputField.pointSize = fontSize;
+                    if (InputField.textComponent == null)
+                    {
+                        InputField.textComponent = TextMeshProUGUI;
+                    }
+                    InputField.SetGlobalPointSize(font);
                 }
             }
             TextMeshProUGUI.enableAutoSizing = false;
@@ -112,6 +117,8 @@ namespace RanterTools.UI
         /// </summary>
         void OnEnable()
         {
+            if (TextMeshProUGUI == null) TextMeshProUGUI = GetComponent<TextMeshProUGUI>();
+            if (InputField == null) InputField = GetComponentInParent<TMP_InputField>();
             InitFont();
             if (width != Mathf.Min(Screen.width, Screen.height) || oldFont != fontSize)
             {

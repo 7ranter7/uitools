@@ -150,6 +150,15 @@ namespace RanterTools.UI
             return success;
         }
 
+        /// <summary>
+        /// Select item from the list.
+        /// </summary>
+        /// <param name="item"></param>
+        public void Select(string item)
+        {
+            OnItemClicked(item);
+        }
+
 
         /// <summary>
         /// What happens when an item in the list is selected
