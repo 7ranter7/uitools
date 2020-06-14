@@ -75,6 +75,11 @@ namespace RanterTools.UI
 
         #region State
         /// <summary>
+        /// Selected option, if it is.
+        /// </summary>
+        public ComboBoxOptionString SelectedOption = null;
+
+        /// <summary>
         /// Is panel active
         /// </summary>
         bool isPanelActive = false;
@@ -166,6 +171,7 @@ namespace RanterTools.UI
         /// <param name="item"></param>
         void OnItemClicked(string item)
         {
+            SelectedOption = AvailableOptions.Find(s => s.Name == item);
             OnSelectionChanged.Invoke(item);
             if (!resetAfterSelect)
             {
@@ -243,6 +249,7 @@ namespace RanterTools.UI
             text = currText;
             if (text == "")
             {
+                SelectedOption = null;
                 if (arrow == null)
                 {
                     isPanelActive = false;
