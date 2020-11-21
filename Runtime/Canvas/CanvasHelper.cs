@@ -154,14 +154,15 @@ namespace RanterTools.UI
             var safeArea = Screen.safeArea;
             var anchorMin = safeArea.position;
             var anchorMax = safeArea.position + safeArea.size;
-            anchorMin.x /= canvas.pixelRect.width;
-            anchorMin.y /= canvas.pixelRect.height;
-            anchorMax.x /= canvas.pixelRect.width;
-            anchorMax.y /= canvas.pixelRect.height;
+            anchorMin.x /=  Screen.width;
+            anchorMin.y /=  Screen.height;
+            anchorMax.x /=  Screen.width;
+            anchorMax.y /=  Screen.height;
             foreach (var s in SafeArea.All)
             {
                 s.RectTransform.anchorMin = anchorMin;
                 s.RectTransform.anchorMax = anchorMax;
+                s.RectTransform.anchoredPosition = s.RectTransform.sizeDelta = Vector2.zero;
             }
         }
 

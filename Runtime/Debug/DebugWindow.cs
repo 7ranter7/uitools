@@ -71,9 +71,13 @@ namespace RanterTools.UI.Debug
             OnRegisterTab += RegisterTabHandler;
             OnShow += Show;
             close.onClick.AddListener(Hide);
-            gameObject.SetActive(false);
+            
         }
 
+        private void Start()
+        {
+            gameObject.SetActive(false);
+        }
 
         #endregion Unity
     }

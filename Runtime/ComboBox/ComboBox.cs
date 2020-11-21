@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEngine.Events;
 
 namespace RanterTools.UI
 {
@@ -115,6 +116,18 @@ namespace RanterTools.UI
         /// </summary>
         float scrollPanelBottomOffset;
 
+
+
+        public UnityEvent<string> onFocus
+        {
+            get { return mainInput.onSelect; }
+        }
+
+        public UnityEvent<string> onFocusLose
+        {
+            get { return mainInput.onEndEdit; }
+        }
+
         #endregion State
 
         #region Methods
@@ -128,6 +141,7 @@ namespace RanterTools.UI
             bool success = true;
             try
             {
+                //mainInput.onSelect
                 mainInput.enabled = input;
                 isPanelActive = false;
                 panel.gameObject.SetActive(isPanelActive);
@@ -275,6 +289,7 @@ namespace RanterTools.UI
         /// <param name="text">Option text</param>
         void OnFieldSelect(string text)
         {
+            mainInput.placeholder.enabled = false;
             mainInput.text = "";
         }
 
